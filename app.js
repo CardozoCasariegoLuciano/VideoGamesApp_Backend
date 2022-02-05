@@ -18,5 +18,6 @@ app.use(cors());
 //routes
 app.use("/api/category", require("./routes/category.route"))
 app.use("/api/videogames", require("./routes/videogames.routes"))
+app.use("/api/auth", require("./routes/auth.routes"))
 
 module.exports = app;

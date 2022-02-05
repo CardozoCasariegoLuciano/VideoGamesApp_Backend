@@ -1,8 +1,6 @@
 const VideoGames = require("../models/videogames.model");
 const formidable = require("formidable");
 const fs = require("fs");
-const _ = require("lodash");
-const { findById } = require("../models/videogames.model");
 
 exports.list = async (req, res) => {
   try {
@@ -58,21 +56,18 @@ exports.create = (req, res) => {
 
 exports.remove = async (req, res) => {
   try {
-    const id = req.params.id;
-    await VideoGames.findByIdAndRemove(id);
+    const id = req.videogame._id;
+    const deletedGame = await VideoGames.findByIdAndRemove(id);
     res.json("Video game removed");
   } catch (err) {
     return res.status(400).json("Something went wrong");
   }
 };
 
-exports.getVideoGameByID = async (req, res) => {
+exports.getOneVideoGame = async (req, res) => {
   try {
-    const id = req.params.id;
-    const videogame = await VideoGames.findById(id)
-      .select("-image")
-      .populate("category");
-    res.json(videogame);
+    req.videogame.image = undefined;
+    res.json(req.videogame);
   } catch (err) {
     return res.status(400).json("Something went wrong");
   }
@@ -80,15 +75,16 @@ exports.getVideoGameByID = async (req, res) => {
 
 exports.getImage = async (req, res) => {
   try {
-    const id = req.params.id;
-    const game = await VideoGames.findById(id);
+    const videogame = req.videogame;
 
-    if (game.image.data) {
-      res.set("Content-Type", game.image.contentType);
-      return res.send(game.image.data);
+    if (videogame.image.data) {
+      res.set("content-type", videogame.image.contentType);
+      return res.send(videogame.image.data);
     }
-    res.json(game.image);
+    return res.json(videogame.image)
+
   } catch (err) {
     return res.status(400).json("Something went wrong");
   }
 };
+
